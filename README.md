@@ -8,65 +8,69 @@ An event-driven, real-time AI platform featuring asynchronous dynamic tool orche
 
 ## 🏗️ System Architecture & Data Flow
 
-[Client App (WebSocket / Custom UI)]
-│
-▼
-[FastAPI WebSocket Endpoint (/ws)]
-│
-▼
-[LLM Intent & ReAct Router Engine]
-│
-▼ (Concurrent Execution via asyncio.as_completed)
-┌───────────┼──────────────────────────┬──────────────────────────┐
-│           ▼                          ▼                          ▼
-│   ┌───────────────┐          ┌───────────────┐          ┌───────────────┐
-│   │  Tavily Web   │          │ Stock Analytics│          │  ComfyUI API  │
-│   │ Search Engine │          │    Engine     │          │ (Workflow API)│
-│   └───────┬───────┘          └───────┬───────┘          └───────┬───────┘
-│           │                          │                          │
-└───────────┴──────────────────────────┼──────────────────────────┘
-▼
-┌─────────────────────────────┐
-│ Real-Time Async Stream Feed │
-└──────────────┬──────────────┘
-▼
-┌─────────────────────────────┐
-│ PostgreSQL / ChromaDB / DB  │
-└──────────────┬──────────────┘
-▼
-[Client Response Output]
+```mermaid
+flowchart TD
+    A["Client App (WebSocket / Custom UI)"] --> B["FastAPI WebSocket Endpoint (/ws)"]
+    B --> C["LLM Intent & ReAct Router Engine"]
+    
+    subgraph Parallel ["Concurrent Execution (asyncio.as_completed)"]
+        D["Tavily Web Search Engine"]
+        E["Stock Analytics Engine"]
+        F["ComfyUI API (Workflow API)"]
+    end
+    
+    C --> D
+    C --> E
+    C --> F
+    
+    D --> G["Real-Time Async Stream Feed"]
+    E --> G
+    F --> G
+    
+    G --> H["PostgreSQL / ChromaDB / Storage"]
+    H --> I["Client Response Output"]
 
+Request Pipeline Tracing
 
-### Request Pipeline Tracing
-1. **WebSocket Ingestion:** The client initiates a connection to the FastAPI `/ws` endpoint. Queries are ingested as JSON payloads.
-2. **Intent Routing:** A central LLM router (powered by models such as Gemma 4) analyzes user intent using a ReAct (Reason + Act) pattern to determine which tools to dispatch.
-3. **Asynchronous Parallel Dispatch:** Selected tools execute concurrently using Python's `asyncio` event loop.
-4. **External Engine Execution:** The agent dispatches HTTP/WebSocket requests to external engines (e.g., executing generative workflows via ComfyUI's `/prompt` API).
-5. **Real-Time Streaming:** Output buffers stream back to the client over the active WebSocket connection as individual tasks complete, eliminating head-of-line blocking.
+    WebSocket Ingestion: The client initiates a connection to the FastAPI /ws endpoint. Queries are ingested as JSON payloads.
 
----
+    Intent Routing: A central LLM router (powered by models such as Gemma 4) analyzes user intent using a ReAct (Reason + Act) pattern to determine which tools to dispatch.
 
-## 🛠️ Complete Tech Stack
+    Asynchronous Parallel Dispatch: Selected tools execute concurrently using Python's asyncio event loop.
 
-* **Core Runtime & Language:** Python 3.9+
-* **Backend Gateway:** `FastAPI` + `Uvicorn` for low-latency asynchronous processing and WebSocket route handling.
-* **Concurrency Engine:** Python `asyncio` (`asyncio.as_completed` stream queues).
-* **Vector & RAG Storage:** `ChromaDB` for high-dimensional document vector embeddings and contextual retrieval.
-* **Relational Storage & Caching:** 
-  * `PostgreSQL` for tenant metadata, access logs, and key isolation.
-  * `Redis` for distributed caching and sliding-window rate limiting.
-* **External Integrations:**
-  * **ComfyUI API:** Custom REST/WebSocket wrapper interfacing with `/prompt` and `/history` endpoints.
-  * **Search & Analytics:** Tavily Web Search and financial market data APIs.
-* **Zero-Trust Network:** Multi-tenant architecture designed for zero-trust isolation (e.g., OpenZiti / zrok overlay support).
+    External Engine Execution: The agent dispatches HTTP/WebSocket requests to external engines (e.g., executing generative workflows via ComfyUI's /prompt API).
 
----
+    Real-Time Streaming: Output buffers stream back to the client over the active WebSocket connection as individual tasks complete, eliminating head-of-line blocking.
 
-## 💻 Asynchronous Orchestration Implementation
+🛠️ Complete Tech Stack
+
+    Core Runtime & Language: Python 3.9+
+
+    Backend Gateway: FastAPI + Uvicorn for low-latency asynchronous processing and WebSocket route handling.
+
+    Concurrency Engine: Python asyncio (asyncio.as_completed stream queues).
+
+    Vector & RAG Storage: ChromaDB for high-dimensional document vector embeddings and contextual retrieval.
+
+    Relational Storage & Caching:
+
+        PostgreSQL for tenant metadata, access logs, and key isolation.
+
+        Redis for distributed caching and sliding-window rate limiting.
+
+    External Integrations:
+
+        ComfyUI API: Custom REST/WebSocket wrapper interfacing with /prompt and /history endpoints.
+
+        Search & Analytics: Tavily Web Search and financial market data APIs.
+
+    Zero-Trust Network: Multi-tenant architecture designed for zero-trust isolation (e.g., OpenZiti / zrok overlay support).
+
+💻 Asynchronous Orchestration Implementation
 
 The platform utilizes non-blocking async generator patterns to execute tools in parallel:
+Python
 
-```python
 import asyncio
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
