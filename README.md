@@ -29,6 +29,7 @@ flowchart TD
     
     G --> H["PostgreSQL / ChromaDB / Storage"]
     H --> I["Client Response Output"]
+```mermaid
 
 Request Pipeline Tracing
 
