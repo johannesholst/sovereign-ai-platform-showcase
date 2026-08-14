@@ -65,7 +65,8 @@ Request Pipeline Tracing
 
         Search & Analytics: Tavily Web Search and financial market data APIs.
 
-    Zero-Trust Network: Multi-tenant architecture designed for zero-trust isolation (e.g., OpenZiti / zrok overlay support).
+    Zero-Trust Network: Multi-tenant architecture designed for zero-trust isolation
+    (e.g., OpenZiti / zrok overlay support).
 
 💻 Asynchronous Orchestration Implementation
 
