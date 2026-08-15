@@ -127,6 +127,11 @@ async def websocket_endpoint(websocket: WebSocket):
 
 <img width="2560" height="1440" alt="image" src="https://github.com/user-attachments/assets/372fdffd-d748-4b0d-86fe-d4572af1bf1c" />
 
+<img width="2560" height="1440" alt="image" src="https://github.com/user-attachments/assets/f18ca7c3-9106-46ee-b235-3e4ffa22c2dc" />
+
+
+
+
 
     
 
