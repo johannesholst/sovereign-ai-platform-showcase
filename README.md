@@ -117,6 +117,8 @@ async def websocket_endpoint(websocket: WebSocket):
 
     Rate Limiting: Managed at the gateway layer via Redis sliding-window algorithms to enforce fair usage quotas per API key.
 
+📸 Media
+
 <img width="2560" height="1440" alt="image" src="https://github.com/user-attachments/assets/7bcabef2-d9a5-4de2-9370-68d2a637563e" />
 
 <img width="2560" height="1440" alt="image" src="https://github.com/user-attachments/assets/5b931153-c6f8-47d6-92ed-0df1ebc40671" />
