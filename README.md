@@ -116,3 +116,5 @@ async def websocket_endpoint(websocket: WebSocket):
     Authentication: JWT-based bearer authentication on administrative HTTP management endpoints.
 
     Rate Limiting: Managed at the gateway layer via Redis sliding-window algorithms to enforce fair usage quotas per API key.
+    <img width="2560" height="1440" alt="image" src="https://github.com/user-attachments/assets/61132136-aa6b-45e2-ad29-1add7d50d56b" />
+
